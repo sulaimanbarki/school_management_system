@@ -1,0 +1,38 @@
+page_head,page_title,page_link,page_type,icon_id,page_order,campusid
+Configurations,Admin Pages,admin/Pages,0,5,100,1
+Configurations,Pages Role Wise,admin/PagesRoleWise,0,5,100,1
+Admin Control,Add Campus,admin/AddCampus,0,5,100,1
+Configurations,AddRole,admin/AddRole,0,5,100,1
+Logout,Logout,admin/admin/logout,0,5,100,1
+Admin Control,Add Employee,admin/AddEmployee,0,5,100,1
+Configurations,Add Class,admin/addClass,0,5,100,1
+Student,Registration,admin/NewRegistration,0,5,100,1
+Student,Admission,admin/NewAdmission,0,5,100,1
+Account,Add Fees,admin/AddFees,0,5,100,1
+Account,Class Wise Fees,admin/ClassWiseFeeCriterial,0,5,100,1
+Account,Scholarships,admin/AddScholarships,0,5,100,1
+Account,Student Wise Fees,admin/AddStudentWiseFeeCriteria,0,5,100,1
+Fees,Fee Generations,admin/FeeGenerations,0,5,100,1
+Admin Control,Salary Generations,admin/FeeGenerationStaff,0,5,100,1
+Admin Control,Salary Sheet,admin/NetSalarySheet,0,5,100,1
+Fees,Edit Fees Slip,admin/EditFeeSlip,0,5,100,1
+Fees,Fees Slip,admin/FeesSlip,0,5,100,1
+Reports,Student Reports,admin/ReportStudents,0,5,100,1
+Reports,Fee Reports,admin/FeeReports,0,5,100,1
+Reports,Examination Reports,admin/ExaminationReports,0,5,100,1
+Reports,Expense & Income Reports,admin/ExpenseAndIncomeReports,0,5,100,1
+Reminder,SMS Reminder,admin/SMSRemainder,0,5,100,1
+Examinations,Add Subjects,admin/AddSubjects,0,5,100,1
+Examinations,Subject Wise Marks,admin/SubjectWiseMarks,0,5,100,1
+Examinations,Personal Development,admin/PersonalDevelopment,0,5,100,1
+Examinations,Class Wise Personal Development,admin/ClassWisePersonalDevelopment,0,5,100,1
+Admin Control,Staff Wise Salary,admin/StaffwiseFeesCriteria,0,5,100,1
+Timetable Setup,Timetable,admin/TimeTable,0,5,100,1
+Student,Student Profile,admin/StudentProfile,0,5,100,1
+Student,Student Promotion,admin/StudentPromotion,0,5,100,1
+Admin Control,Staff Profile,admin/StaffProfile,0,5,100,1
+Account & Expenses,Expenses,admin/Expenses,0,5,100,1
+Account & Expenses,Accounts,admin/Accounts,0,5,100,1
+Timetable Setup, Times and Locations,admin/Locations,0,5,100,1
+Configurations,Add Campus,admin/AddCampus,0,5,100,1
+Student,Students Attendance,admin/StudentsAttendance,0,5,100,1

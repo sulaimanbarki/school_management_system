@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use auth;
+class NewAdmission extends Controller
+{
+    //
+
+	public function Loadpage()
+	{
+		return view('admin.Items');
+	}
+
+
+
+}
