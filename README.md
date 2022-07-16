@@ -1,4 +1,4 @@
-<p>A multi-campus and a dynamic school management system with tons of features.</p>
+<p>A multi-campus and a dynamic school management system with tons of features, designed for Peshawar Model School here in Peshawar.</p>
 <ul>
     <li>Student module - Registration and admission</li>
     <li>Fee module - Fee generation, fees slip edit and fees collection</li>
