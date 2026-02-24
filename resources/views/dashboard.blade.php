@@ -4,7 +4,7 @@
             {{ __('Dashboard') }}
 
 
-            hi.....{{ Auth::user()->name }}
+            hi..{{ Auth::user()->name }}
         </h2>
     </x-slot>
 
