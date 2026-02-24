@@ -20,6 +20,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
+            
         }
         .login-bg {
             background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('login_bg.png') }}');
