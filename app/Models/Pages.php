@@ -9,6 +9,7 @@ class Pages extends Model
 {
     use HasFactory;
     protected $table = "pages";
+    protected $primaryKey = 'page_id';
     public $timestamps = false;
     protected $fillable = [
         'page_head',

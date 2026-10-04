@@ -9,6 +9,7 @@ class Icon extends Model
 {
     use HasFactory;
     protected $table = 'icons';
+    protected $primaryKey = 'icon_id';
     public $timestamps = false;
     protected $fillable = [
         'icon_name',

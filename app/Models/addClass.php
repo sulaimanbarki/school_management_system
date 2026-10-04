@@ -10,6 +10,7 @@ class addClass extends Model
     use HasFactory;
     //$table="configurations";
     protected $table = 'classes';
+    protected $primaryKey = 'C_id';
     public $timestamps = false;
     protected $fillable = [
         'C_id',

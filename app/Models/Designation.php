@@ -14,6 +14,7 @@ class Designation extends Model
         'name',
         'bps',
         'isactive',
-        'sequence'
+        'sequence',
+        'campusid',
     ];
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class addsection extends Model
 {
     protected $table = "sections";
+    protected $primaryKey = 'Sec_ID';
     use HasFactory;
     public $timestamps = false;
     protected $fillable = [

@@ -35,5 +35,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(IconsSeeder::class);
         $this->call(PagesSeeder::class);
+        $this->call(DefaultConfigurationSeeder::class);
     }
 }
