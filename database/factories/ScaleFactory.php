@@ -23,10 +23,10 @@ class ScaleFactory extends Factory
             'yearlyincrement' => 1,
             'salarylimit' => 1,
             'eobiamount' => 1,
-            'academicsession' => 1,
+            'academicsession' => \App\Models\academicsessions::first()->id ?? 1,
             'isactive' => 1,
             'sequence' => 1,
-            'campusid' => "1",
+            'campusid' => \App\Models\addCampus::first()->campusid ?? 1,
         ];
     }
 }

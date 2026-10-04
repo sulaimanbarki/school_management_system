@@ -14,13 +14,24 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-        \App\Models\addCampus::factory(1)->create();
-        \App\Models\academicsessions::factory(1)->create();
-        \App\Models\Department::factory(1)->create();
-        \App\Models\Scale::factory(1)->create();
-        
-        \App\Models\Role::factory(1)->create();
-        \App\Models\Admin::factory(1)->create();
+        if (\App\Models\addCampus::count() == 0) {
+            \App\Models\addCampus::factory(1)->create();
+        }
+        if (\App\Models\academicsessions::count() == 0) {
+            \App\Models\academicsessions::factory(1)->create();
+        }
+        if (\App\Models\Department::count() == 0) {
+            \App\Models\Department::factory(1)->create();
+        }
+        if (\App\Models\Scale::count() == 0) {
+            \App\Models\Scale::factory(1)->create();
+        }
+        if (\App\Models\Role::count() == 0) {
+            \App\Models\Role::factory(1)->create();
+        }
+        if (\App\Models\Admin::count() == 0) {
+            \App\Models\Admin::factory(1)->create();
+        }
 
         $this->call(IconsSeeder::class);
         $this->call(PagesSeeder::class);
