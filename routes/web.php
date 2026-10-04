@@ -5,7 +5,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountDetailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AdminPages;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\NewAdmission;
 use App\Http\Controllers\AddClass_Section;
@@ -31,6 +31,7 @@ use App\Http\Controllers\FeesController;
 use App\Http\Controllers\FeesSlip;
 use App\Http\Controllers\ReportStudents;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ScholarshipController;
 use App\Http\Controllers\SMSRemainder;
 use App\Http\Controllers\NetSalarySheet;
@@ -49,7 +50,6 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MainCategoryController;
 use App\Http\Controllers\NetSalaryController;
-use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ScaleController;
 use App\Http\Controllers\SchooleavingcirtificateController;
 use App\Http\Controllers\StaffAttendanceController;
@@ -103,9 +103,13 @@ Route::get('/backupdatabase', function () {
 // za da poe kma aawal gura da landi che sumaa routes da kna da admin da
 // da without login khom access kegeege gura
 
-Route::middleware(['RolesAndPages', 'auth:admin'])->prefix('admin')->group(function () {
-    Route::get('/Pages', [AdminPages::class, 'Index'])->name('adminbackend.pages.page');
-    Route::get('/PagesRoleWise', [AdminPages::class, 'PagesRoleWise'])->name('adminbackend.pages.PagesRoleWise');
+Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
+    // Admin Users Management (Dynamic)
+    Route::get('/admins', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::post('/admins', [AdminUserController::class, 'store'])->name('admin.users.store');
+    Route::put('/admins/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admins/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+
     Route::get('/AddCampus', [Campus::class, 'Index'])->name('adminbackend.addCampus.page');
     Route::get('/AddRole', [RoleController::class, 'Index'])->name('adminbackend.AddRole.page');
     Route::get('/admin/logout', [AdminController::class, 'destroy'])->name('Admin.logout');
@@ -201,6 +205,14 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:admin']], function () 
         return view('admin.index');
     });
 
+    // Dynamic Roles & Permissions Management (Spatie)
+    Route::get('/roles-permissions', [RolePermissionController::class, 'index'])->name('roles.index');
+    Route::post('/roles-permissions', [RolePermissionController::class, 'store'])->name('roles.store');
+    Route::get('/roles-permissions/{id}/edit', [RolePermissionController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles-permissions/{id}', [RolePermissionController::class, 'update'])->name('roles.update');
+    Route::delete('/roles-permissions/{id}', [RolePermissionController::class, 'destroy'])->name('roles.destroy');
+    Route::post('/roles-permissions/assign-admin', [RolePermissionController::class, 'assignAdminRole'])->name('roles.assignAdmin');
+
     // Route::get('/Pages', [AdminPages::class, 'Index'])->name('adminbackend.pages.page');
     // Route::get('/PagesRoleWise', [AdminPages::class, 'PagesRoleWise'])->name('adminbackend.pages.PagesRoleWise');
     // Route::get('/AddCampus', [Campus::class, 'Index'])->name('adminbackend.addCampus.page');
@@ -253,8 +265,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:admin']], function () 
     // student promotion
     Route::post('/RelativesData', [StudentInfoController::class, 'RelativesData'])->name('adminbackend.RelativesData');
     Route::post('/LoadStudenInfo', [StudentInfoController::class, 'LoadStudenInfo'])->name('adminbackend.LoadStudenInfo');
-    Route::post('/PagesRoleWiseLoad', [AdminPages::class, 'PagesRoleWiseLoad'])->name('admin.PagesRoleWiseLoad');
-    Route::post('/UpdatePagesRole', [AdminPages::class, 'UpdatePagesRole'])->name('admin.UpdatePagesRole');
 
     Route::post('/LoadStaffInfo', [StaffProfile::class, 'LoadStaffInfo'])->name('adminbackend.LoadStaffInfo');
     Route::post('/LoadStaffAllowances', [StaffProfile::class, 'LoadStaffAllowances'])->name('admin.LoadStaffAllowances');
@@ -527,7 +537,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:admin']], function () 
     Route::resource('locations', LocationController::class);
     Route::resource('times', TimeController::class);
     Route::resource('classwiseteachers', ClassWiseTeacherController::class);
-    Route::resource('/adminpages', PagesController::class);
 
     // time table
     Route::resource('timetables', TimeTableController::class);

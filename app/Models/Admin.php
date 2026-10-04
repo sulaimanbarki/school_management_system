@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable
 {
@@ -17,6 +18,9 @@ class Admin extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles;
+
+    protected $guard_name = 'admin';
 
     protected $table = 'admins';
     public $timestamps = false;
@@ -41,6 +45,11 @@ class Admin extends Authenticatable
         'profile_photo_path',
         'campusid',
         'busnumber',
+        'roleid',
+        'departmentid',
+        'scaleid',
+        'isactive',
+        'fixedsalary',
     ];
 
     /**
@@ -76,5 +85,10 @@ class Admin extends Authenticatable
     public function role()
     {
         return $this->hasOne(Role::class);
+    }
+
+    public function campus()
+    {
+        return $this->belongsTo(addCampus::class, 'campusid', 'campusid');
     }
 }
