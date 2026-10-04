@@ -109,6 +109,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
     Route::post('/admins', [AdminUserController::class, 'store'])->name('admin.users.store');
     Route::put('/admins/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::delete('/admins/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/admins/{id}/impersonate', [AdminUserController::class, 'impersonate'])->name('admin.impersonate');
+    Route::get('/admins-impersonate/leave', [AdminUserController::class, 'leaveImpersonate'])->name('admin.impersonate.leave');
 
     Route::get('/AddCampus', [Campus::class, 'Index'])->name('adminbackend.addCampus.page');
     Route::get('/AddRole', [RoleController::class, 'Index'])->name('adminbackend.AddRole.page');

@@ -130,4 +130,51 @@ class AdminUserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', "Admin user '{$adminName}' has been removed.");
     }
+
+    /**
+     * Impersonate another admin user (Session-based).
+     */
+    public function impersonate($id)
+    {
+        $targetAdmin = Admin::findOrFail($id);
+        $currentAdmin = Auth::guard('admin')->user();
+
+        // Only allow SuperAdmin, ID 1, or users with roles.manage
+        if (!$currentAdmin->hasRole('SuperAdmin') && $currentAdmin->id != 1 && !$currentAdmin->can('roles.manage')) {
+            return redirect()->route('admin.users.index')->with('error', 'You are not authorized to impersonate users.');
+        }
+
+        // Save original admin details in session if not already impersonating
+        if (!session()->has('impersonate_original_admin_id')) {
+            session()->put('impersonate_original_admin_id', $currentAdmin->id);
+            session()->put('impersonate_original_admin_name', $currentAdmin->name);
+        }
+
+        // Log in as target admin
+        Auth::guard('admin')->login($targetAdmin);
+
+        return redirect('/admin/dashboard');
+    }
+
+    /**
+     * Leave impersonation and restore original admin session.
+     */
+    public function leaveImpersonate()
+    {
+        if (session()->has('impersonate_original_admin_id')) {
+            $originalId = session()->get('impersonate_original_admin_id');
+            $originalAdmin = Admin::find($originalId);
+
+            session()->forget('impersonate_original_admin_id');
+            session()->forget('impersonate_original_admin_name');
+
+            if ($originalAdmin) {
+                Auth::guard('admin')->login($originalAdmin);
+            }
+
+            return redirect()->route('admin.users.index')->with('success', 'Returned to your original administrator account.');
+        }
+
+        return redirect('/admin/dashboard');
+    }
 }

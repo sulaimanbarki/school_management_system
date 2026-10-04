@@ -86,6 +86,20 @@
     @include('admin.header')
     <!-- /.navbar -->
 
+    @if(session()->has('impersonate_original_admin_id'))
+    <div style="background: linear-gradient(90deg, #d97706, #b45309); color: white; padding: 10px 24px; font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 3px 12px rgba(0,0,0,0.18); position: sticky; top: 0; z-index: 1050;">
+      <div>
+        <i class="fas fa-user-secret fa-lg mr-2"></i>
+        <span>IMPERSONATION MODE: You are currently signed in as <strong>{{ Auth::user()->name }}</strong> ({{ Auth::user()->roles->first()?->name ?? 'Admin' }}). You have their exact permissions and view.</span>
+      </div>
+      <div>
+        <a href="{{ route('admin.impersonate.leave') }}" class="btn btn-sm btn-light font-weight-bold px-3 py-1 shadow-sm rounded-pill" style="color: #b45309;">
+          <i class="fas fa-sign-out-alt mr-1"></i> Exit Impersonation (Back to {{ session('impersonate_original_admin_name', 'Admin') }})
+        </a>
+      </div>
+    </div>
+    @endif
+
     <!-- Main Sidebar Container -->
     @include('admin.sidebar')
 

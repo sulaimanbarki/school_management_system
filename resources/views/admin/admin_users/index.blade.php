@@ -143,7 +143,7 @@
             <th>Campus</th>
             <th>Assigned Role</th>
             <th>Status</th>
-            <th style="width: 150px;" class="text-right">Actions</th>
+            <th style="width: 260px;" class="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -188,8 +188,17 @@
               @endif
             </td>
             <td class="text-right">
+              @if($adm->id !== Auth::id())
+              <a href="{{ route('admin.impersonate', $adm->id) }}" 
+                target="_blank" 
+                class="btn btn-sm btn-outline-warning rounded-pill px-2 py-1 font-weight-bold" 
+                title="Impersonate {{ $adm->name }} in new tab">
+                <i class="fas fa-user-secret mr-1"></i> Impersonate
+              </a>
+              @endif
+
               <button type="button" 
-                class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 btn-edit-admin"
+                class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 btn-edit-admin ml-1"
                 data-id="{{ $adm->id }}"
                 data-name="{{ $adm->name }}"
                 data-email="{{ $adm->email }}"
@@ -201,7 +210,7 @@
               </button>
 
               @if($adm->id !== Auth::id() && $adm->id !== 1 && !$adm->hasRole('SuperAdmin'))
-              <form action="{{ route('admin.users.destroy', $adm->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete admin user {{ $adm->name }}?');">
+              <form action="{{ route('admin.users.destroy', $adm->id) }}" method="POST" class="d-inline-block ml-1" onsubmit="return confirm('Are you sure you want to delete admin user {{ $adm->name }}?');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1" title="Delete Admin">
