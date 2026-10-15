@@ -19,7 +19,8 @@
 </div>
 <!-- /.content-header -->
 <?php
-  $currentsession = \App\Models\academicsessions::where('CampusID', Auth::user()->campusid)->where('IsActive', 1)->where('IsCurrent', 1)->value('id');
+  $campusId = Auth::guard('admin')->user()?->campusid ?? Auth::user()?->campusid ?? 1;
+  $currentsession = \App\Models\academicsessions::where('CampusID', $campusId)->where('IsActive', 1)->where('IsCurrent', 1)->value('id');
 ?>
 <!-- Main content -->
 <section class="content">
@@ -31,8 +32,8 @@
         <div class="small-box bg-info">
           <div class="inner">
             <?php 
-              $totalActiveStudents = \App\Models\StudentInfo::where('campusid', Auth::user()->campusid)->where('session', $currentsession)->where('status', 'Active')->count();
-              $certifiedStudents = \App\Models\StudentInfo::where('campusid', Auth::user()->campusid)->where('session', $currentsession)->where('status', 'Slc')->count();
+              $totalActiveStudents = \App\Models\StudentInfo::where('campusid', $campusId)->where('session', $currentsession)->where('status', 'Active')->count();
+              $certifiedStudents = \App\Models\StudentInfo::where('campusid', $campusId)->where('session', $currentsession)->where('status', 'Slc')->count();
             ?>
             <h3>{{$totalActiveStudents}}</h3>
 
@@ -67,7 +68,7 @@
         <div class="small-box bg-warning">
           <div class="inner">
             <?php 
-              $sum = \App\Models\FeeGeneration::where('campusid', Auth::user()->campusid)->where('date', date('Y-m-d'))->where('ispaid', 1)->where('description', '!=', 'Reversed')->where('feeamount', '>', 0)->sum('feeamount');
+              $sum = \App\Models\FeeGeneration::where('campusid', $campusId)->where('date', date('Y-m-d'))->where('ispaid', 1)->where('description', '!=', 'Reversed')->where('feeamount', '>', 0)->sum('feeamount');
             ?>
             <h3>{{ $sum }}</h3>
 
@@ -87,7 +88,7 @@
             <?php
               $result = DB::select("
                   SELECT eh.expense_head, ex.expense_head_id, ex.id, ex.expense_desc, ex.expense_date, ex.expense_amount FROM expense_heads eh INNER JOIN `expenses` ex ON ex.expense_head_id = eh.id WHERE ex.campusid = eh.campusid AND ex.campusid = eh.campusid and ex.campusid = ? and ex.expense_date = CURDATE()
-              ", [Auth::user()->campusid]);
+              ", [$campusId]);
             ?>
             <h3>{{ !empty($result[0]->expense_amount) ? $result[0]->expense_amount : 0 }}</h3>
 
@@ -105,7 +106,7 @@
         <div class="small-box bg-info">
           <div class="inner">
             <?php 
-              $present = \App\Models\StudentAttendance::where('campusid', Auth::user()->campusid)->where('date', date('Y-m-d'))->where('status', 'Present')->count('id');
+              $present = \App\Models\StudentAttendance::where('campusid', $campusId)->where('date', date('Y-m-d'))->where('status', 'Present')->count('id');
             ?>
             <h3>{{$present}}</h3>
   
@@ -123,7 +124,7 @@
         <div class="small-box bg-success">
           <div class="inner">
             <?php 
-              $absent = \App\Models\StudentAttendance::where('campusid', Auth::user()->campusid)->where('date', date('Y-m-d'))->where('status', 'Absent')->count('id');
+              $absent = \App\Models\StudentAttendance::where('campusid', $campusId)->where('date', date('Y-m-d'))->where('status', 'Absent')->count('id');
             ?>
             <h3>{{$absent}}
               {{-- <sup style="font-size: 20px">%</sup> --}}

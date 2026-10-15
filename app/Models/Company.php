@@ -27,7 +27,15 @@ class Company extends Model implements HasMedia
 
     public function getLogoUrlAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('logo')
-            ?: ($this->logo ? asset('companylogo/' . $this->logo) : null);
+        try {
+            $mediaUrl = $this->getFirstMediaUrl('logo');
+            if (!empty($mediaUrl)) {
+                return $mediaUrl;
+            }
+        } catch (\Throwable $e) {
+            // Gracefully fallback to legacy column if media table is not yet migrated
+        }
+
+        return $this->logo ? asset('companylogo/' . $this->logo) : null;
     }
 }

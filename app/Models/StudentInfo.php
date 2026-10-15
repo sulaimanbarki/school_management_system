@@ -56,7 +56,15 @@ class StudentInfo extends Model implements HasMedia
 
     public function getPictureUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('profile_picture')
-            ?: ($this->picturepath ? asset('studentprofilepicture/' . $this->picturepath) : asset('userbackend/dist/img/AdminLTELogo.png'));
+        try {
+            $mediaUrl = $this->getFirstMediaUrl('profile_picture');
+            if (!empty($mediaUrl)) {
+                return $mediaUrl;
+            }
+        } catch (\Throwable $e) {
+            // Gracefully fallback to legacy column if media table is not yet migrated
+        }
+
+        return $this->picturepath ? asset('studentprofilepicture/' . $this->picturepath) : asset('userbackend/dist/img/AdminLTELogo.png');
     }
 }

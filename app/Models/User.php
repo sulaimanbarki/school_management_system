@@ -75,7 +75,15 @@ class User extends Authenticatable implements HasMedia
 
     public function getProfilePhotoUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('profile_photo')
-            ?: ($this->profile_photo_path ? asset('storage/' . $this->profile_photo_path) : $this->defaultProfilePhotoUrl());
+        try {
+            $mediaUrl = $this->getFirstMediaUrl('profile_photo');
+            if (!empty($mediaUrl)) {
+                return $mediaUrl;
+            }
+        } catch (\Throwable $e) {
+            // Gracefully fallback to legacy column if media table is not yet migrated
+        }
+
+        return $this->profile_photo_path ? asset('storage/' . $this->profile_photo_path) : $this->defaultProfilePhotoUrl();
     }
 }

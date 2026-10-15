@@ -94,8 +94,16 @@ class Admin extends Authenticatable implements HasMedia
 
     public function getProfilePhotoUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('profile_picture')
-            ?: ($this->profile_photo_path ? asset('profilepicture/' . $this->profile_photo_path) : asset('userbackend/dist/img/AdminLTELogo.png'));
+        try {
+            $mediaUrl = $this->getFirstMediaUrl('profile_picture');
+            if (!empty($mediaUrl)) {
+                return $mediaUrl;
+            }
+        } catch (\Throwable $e) {
+            // Gracefully fallback to legacy column if media table is not yet migrated
+        }
+
+        return $this->profile_photo_path ? asset('profilepicture/' . $this->profile_photo_path) : asset('userbackend/dist/img/AdminLTELogo.png');
     }
 
     public function role()

@@ -36,13 +36,29 @@ class addCampus extends Model implements HasMedia
 
     public function getLogoPhotoUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('campus_logo')
-            ?: ($this->Logo_photo_path ? asset('CampusLogos/' . $this->Logo_photo_path) : asset('userbackend/dist/img/AdminLTELogo.png'));
+        try {
+            $mediaUrl = $this->getFirstMediaUrl('campus_logo');
+            if (!empty($mediaUrl)) {
+                return $mediaUrl;
+            }
+        } catch (\Throwable $e) {
+            // Gracefully fallback to legacy column if media table is not yet migrated
+        }
+
+        return $this->Logo_photo_path ? asset('CampusLogos/' . $this->Logo_photo_path) : asset('userbackend/dist/img/AdminLTELogo.png');
     }
 
     public function getBankLogoUrlAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('bank_logo')
-            ?: ($this->banklogo ? asset('banklogo/' . $this->banklogo) : null);
+        try {
+            $mediaUrl = $this->getFirstMediaUrl('bank_logo');
+            if (!empty($mediaUrl)) {
+                return $mediaUrl;
+            }
+        } catch (\Throwable $e) {
+            // Gracefully fallback to legacy column if media table is not yet migrated
+        }
+
+        return $this->banklogo ? asset('banklogo/' . $this->banklogo) : null;
     }
 }

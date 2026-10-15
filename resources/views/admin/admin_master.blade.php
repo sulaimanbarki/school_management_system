@@ -6,9 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="_token" content="{{ csrf_token() }}" />
   <?php
-  $campus = \App\Models\addCampus::where('campusid', Auth::user()->campusid)->first();
+  $currentAuthUser = Auth::guard('admin')->user() ?? Auth::user();
+  $campus = \App\Models\addCampus::where('campusid', $currentAuthUser?->campusid ?? 1)->first();
   ?>
-  <title>{{ $campus->CampusName }}</title>
+  <title>{{ $campus?->CampusName ?? 'School Management System' }}</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
