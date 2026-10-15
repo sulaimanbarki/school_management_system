@@ -24,7 +24,7 @@ class CreatePersonalDevelopmentStoresTable extends Migration
             $table->integer('classid')->unsigned();
             $table->foreign('classid')->references('C_id')->on('classes');
             $table->integer('sectionid')->unsigned();
-            $table->foreign('sectionid')->references('Sec_ID')->on('Sections');
+            $table->foreign('sectionid')->references('Sec_ID')->on('sections');
             $table->integer('campusid')->unsigned();
             $table->foreign('campusid')->references('campusid')->on('configurations');
             $table->string('studentid', 20);

@@ -14,7 +14,7 @@ class StudentWiseSchlorshipHeads extends Migration
     public function up()
     {
         //
-        Schema::create('Studentscholarshipwisesubheads', function (Blueprint $table) {
+        Schema::create('studentscholarshipwisesubheads', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('subheadid')->unsigned();
             $table->integer('amountParentage');

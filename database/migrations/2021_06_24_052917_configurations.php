@@ -14,7 +14,7 @@ class Configurations extends Migration
     public function up()
     {
         //
-        Schema::create('Configurations', function (Blueprint $table) {
+        Schema::create('configurations', function (Blueprint $table) {
             $table->increments('campusid');
             $table->string('CampusName');
             $table->string('CampusPrefix');

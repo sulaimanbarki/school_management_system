@@ -14,7 +14,7 @@ class ClassWiseSection extends Migration
     public function up()
     {
         //
-        Schema::create('ClassWiseSection', function (Blueprint $table) {
+        Schema::create('classwisesection', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('Sequence');
             $table->date('Date');
@@ -23,8 +23,8 @@ class ClassWiseSection extends Migration
             $table->integer('ClassID')->unsigned();
             $table->integer('SectionID')->unsigned();
             $table->foreign('campusid')->references('campusid')->on('configurations');
-            $table->foreign('ClassID')->references('C_id')->on('Classes');
-            $table->foreign('SectionID')->references('Sec_ID')->on('Sections');
+            $table->foreign('ClassID')->references('C_id')->on('classes');
+            $table->foreign('SectionID')->references('Sec_ID')->on('sections');
         });
     }
 

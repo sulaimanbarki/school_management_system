@@ -13,7 +13,7 @@ class StudentRegistration extends Migration
      */
     public function up()
     {
-        Schema::create('StudentRegistrations', function (Blueprint $table) {
+        Schema::create('studentregistrations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('formid', 20);
             $table->string('studentname', 150);

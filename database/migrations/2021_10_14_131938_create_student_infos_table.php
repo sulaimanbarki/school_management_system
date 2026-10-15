@@ -27,7 +27,7 @@ class CreateStudentInfosTable extends Migration
             $table->integer('admissioninclass')->unsigned();
             $table->foreign('admissioninclass')->references('C_id')->on('classes');
             $table->integer('admissioninsection')->unsigned();
-            $table->foreign('admissioninsection')->references('Sec_ID')->on('Sections');
+            $table->foreign('admissioninsection')->references('Sec_ID')->on('sections');
             $table->date('date');
             $table->integer('session')->unsigned();
             $table->foreign('session')->references('id')->on('academicsessions');

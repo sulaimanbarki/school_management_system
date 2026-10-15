@@ -13,7 +13,7 @@ class AddClass extends Migration
      */
     public function up()
     {
-        Schema::create('Classes', function (Blueprint $table) {
+        Schema::create('classes', function (Blueprint $table) {
             $table->increments('C_id');
             // $table->foreignId('Class')->nullable()->index();
             $table->string('ClassName', 45)->nullable();

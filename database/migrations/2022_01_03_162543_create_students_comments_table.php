@@ -24,7 +24,7 @@ class CreateStudentsCommentsTable extends Migration
             $table->integer('classid')->unsigned();
             $table->foreign('classid')->references('C_id')->on('classes');
             $table->integer('sectionid')->unsigned();
-            $table->foreign('sectionid')->references('Sec_ID')->on('Sections');
+            $table->foreign('sectionid')->references('Sec_ID')->on('sections');
         });
     }
 

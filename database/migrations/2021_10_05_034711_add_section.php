@@ -13,12 +13,12 @@ class AddSection extends Migration
      */
     public function up()
     {
-        Schema::create('Sections', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table) {
             $table->increments('Sec_ID');
             $table->string('SectionName');
             $table->tinyInteger('SectionSequence');
             $table->integer('campusid')->unsigned();
-            $table->foreign('campusid')->references('campusid')->on('Configurations');
+            $table->foreign('campusid')->references('campusid')->on('configurations');
 
             // $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
         });
