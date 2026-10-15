@@ -129,7 +129,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @if ($can(['roles.manage', 'manage roles']))
+                        @if ($can(['roles.manage', 'manage roles', 'employees.manage']))
                             <li class="nav-item">
                                 <a href="{{ route('admin.users.index') }}"
                                     class="nav-link {{ request()->is('admin/admins*') ? 'active' : '' }}">

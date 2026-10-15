@@ -12,4 +12,5 @@ class addCampus extends Model
     protected $table = 'configurations';
     public $timestamps = false;
     protected $primaryKey = 'campusid';
+    protected $guarded = [];
 }

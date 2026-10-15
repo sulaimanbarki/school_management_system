@@ -99,6 +99,15 @@ class EmployeeController extends Controller
         $emp->busnumber = $request->busnumber;
 
         if ($emp->save()) {
+            // Automatically assign matching Spatie permission role (e.g. Teacher, Accountant)
+            $legacyRole = \App\Models\Role::find($request->empRole);
+            if ($legacyRole) {
+                $spatieRole = \Spatie\Permission\Models\Role::where('name', $legacyRole->Role)->where('guard_name', 'admin')->first();
+                if ($spatieRole) {
+                    $emp->assignRole($spatieRole);
+                }
+            }
+
             $basicpaysalary = Scale::where('campusid', $campusid)->where('id', $request->empscale)->value('basicpay');
             try {
                 $ebps = new StaffBasicPaySalary();
@@ -225,6 +234,18 @@ class EmployeeController extends Controller
                 'profile_photo_path' => $imgname,
                 'busnumber' => $request->input('busnumber'),
             ]);
+        }
+
+        // Sync Spatie permission role
+        $emp = Admin::find($request->input('id'));
+        if ($emp && $request->filled('empRole')) {
+            $legacyRole = \App\Models\Role::find($request->input('empRole'));
+            if ($legacyRole) {
+                $spatieRole = \Spatie\Permission\Models\Role::where('name', $legacyRole->Role)->where('guard_name', 'admin')->first();
+                if ($spatieRole) {
+                    $emp->syncRoles([$spatieRole]);
+                }
+            }
         }
     }
 

@@ -56,11 +56,13 @@
       </div>
       <div class="col-sm-6 text-right">
         <button type="button" class="btn btn-primary btn-sm px-3 shadow-sm rounded-pill font-weight-bold" data-toggle="modal" data-target="#createAdminModal">
-          <i class="fas fa-user-plus mr-1"></i> Add New Admin User
+          <i class="fas fa-user-plus mr-1"></i> Add New User
         </button>
+        @if($isSuperAdmin || Auth::user()->can('roles.manage'))
         <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm rounded-pill ml-2">
           <i class="fas fa-shield-alt mr-1"></i> Configure Roles & Permissions
         </a>
+        @endif
       </div>
     </div>
   </div>
@@ -90,7 +92,7 @@
     <div class="stat-box shadow-sm" style="background: linear-gradient(135deg, #4f46e5, #6366f1);">
       <div>
         <div class="count">{{ $admins->count() }}</div>
-        <div class="label">Total Admins</div>
+        <div class="label">{{ $isSuperAdmin ? 'Total Admins' : 'Campus Users' }}</div>
       </div>
       <i class="fas fa-users"></i>
     </div>
@@ -104,6 +106,7 @@
       <i class="fas fa-user-check"></i>
     </div>
   </div>
+  @if($isSuperAdmin)
   <div class="col-md-3">
     <div class="stat-box shadow-sm" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
       <div>
@@ -122,13 +125,35 @@
       <i class="fas fa-university"></i>
     </div>
   </div>
+  @else
+  <div class="col-md-3">
+    <div class="stat-box shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+      <div>
+        <div class="count">{{ $admins->filter(fn($a) => $a->hasRole('Teacher'))->count() }}</div>
+        <div class="label">Campus Teachers</div>
+      </div>
+      <i class="fas fa-chalkboard-teacher"></i>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-box shadow-sm" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">
+      <div>
+        <div class="count" style="font-size: 1.15rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          {{ $currentUser->campus?->CampusName ?? 'Campus #' . $currentUser->campusid }}
+        </div>
+        <div class="label">Assigned Campus</div>
+      </div>
+      <i class="fas fa-school"></i>
+    </div>
+  </div>
+  @endif
 </div>
 
 <!-- Admins Table Card -->
 <div class="card admin-card mb-4">
   <div class="card-header bg-white border-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
     <h5 class="card-title font-weight-bold text-dark mb-0">
-      <i class="fas fa-list text-primary mr-1"></i> Active Administrator Accounts
+      <i class="fas fa-list text-primary mr-1"></i> {{ $isSuperAdmin ? 'All Administrator & Staff Accounts' : 'Staff & Faculty Accounts for ' . ($currentUser->campus?->CampusName ?? 'Your Campus') }}
     </h5>
     <span class="badge badge-light border px-2 py-1">{{ $admins->count() }} Accounts</span>
   </div>
@@ -138,7 +163,7 @@
         <thead class="thead-light">
           <tr>
             <th style="width: 50px;" class="text-center">#</th>
-            <th>Administrator</th>
+            <th>Name</th>
             <th>Email Address</th>
             <th>Campus</th>
             <th>Assigned Role</th>
@@ -151,6 +176,7 @@
           @php
             $roleName = $adm->roles->first()?->name ?? 'No Role Assigned';
             $campusName = $adm->campus?->CampusName ?? 'Campus #' . $adm->campusid;
+            $canEdit = $isSuperAdmin || ($adm->campusid == $currentUser->campusid && !$adm->hasRole('SuperAdmin') && $adm->id !== 1);
           @endphp
           <tr>
             <td class="text-center font-weight-bold text-muted">{{ $index + 1 }}</td>
@@ -188,7 +214,7 @@
               @endif
             </td>
             <td class="text-right">
-              @if($adm->id !== Auth::id())
+              @if(($isSuperAdmin || Auth::user()->can('roles.manage')) && $adm->id !== Auth::id() && !$adm->hasRole('SuperAdmin'))
               <a href="{{ route('admin.impersonate', $adm->id) }}" 
                 target="_blank" 
                 class="btn btn-sm btn-outline-warning rounded-pill px-2 py-1 font-weight-bold" 
@@ -197,6 +223,7 @@
               </a>
               @endif
 
+              @if($canEdit)
               <button type="button" 
                 class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 btn-edit-admin ml-1"
                 data-id="{{ $adm->id }}"
@@ -208,12 +235,13 @@
                 data-isactive="{{ $adm->isactive }}">
                 <i class="fas fa-edit mr-1"></i> Edit
               </button>
+              @endif
 
-              @if($adm->id !== Auth::id() && $adm->id !== 1 && !$adm->hasRole('SuperAdmin'))
-              <form action="{{ route('admin.users.destroy', $adm->id) }}" method="POST" class="d-inline-block ml-1" onsubmit="return confirm('Are you sure you want to delete admin user {{ $adm->name }}?');">
+              @if($adm->id !== Auth::id() && $adm->id !== 1 && !$adm->hasRole('SuperAdmin') && $canEdit)
+              <form action="{{ route('admin.users.destroy', $adm->id) }}" method="POST" class="d-inline-block ml-1" onsubmit="return confirm('Are you sure you want to delete user {{ $adm->name }}?');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1" title="Delete Admin">
+                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1" title="Delete User">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </form>
@@ -234,7 +262,7 @@
       @csrf
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title font-weight-bold" id="createAdminModalLabel">
-          <i class="fas fa-user-plus mr-1"></i> Create New Admin User
+          <i class="fas fa-user-plus mr-1"></i> {{ $isSuperAdmin ? 'Create New Admin User' : 'Add New Staff / Faculty Account' }}
         </h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -261,11 +289,18 @@
           <div class="col-md-6">
             <div class="form-group">
               <label for="new_admin_campus" class="font-weight-bold">Campus <span class="text-danger">*</span></label>
+              @if($isSuperAdmin)
               <select name="campusid" id="new_admin_campus" class="form-control" required>
                 @foreach($campuses as $campus)
                   <option value="{{ $campus->campusid }}">{{ $campus->CampusName }}</option>
                 @endforeach
               </select>
+              @else
+              <input type="hidden" name="campusid" value="{{ $currentUser->campusid }}">
+              <div class="form-control bg-light d-flex align-items-center font-weight-bold text-dark">
+                <i class="fas fa-school mr-1 text-primary"></i> {{ $currentUser->campus?->CampusName ?? 'Campus #' . $currentUser->campusid }}
+              </div>
+              @endif
             </div>
           </div>
           <div class="col-md-6">
@@ -287,7 +322,7 @@
       </div>
       <div class="modal-footer bg-light">
         <button type="button" class="btn btn-secondary rounded-pill px-3" data-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary rounded-pill px-4 font-weight-bold shadow-sm">Create Admin User</button>
+        <button type="submit" class="btn btn-primary rounded-pill px-4 font-weight-bold shadow-sm">Create Account</button>
       </div>
     </form>
   </div>
@@ -301,7 +336,7 @@
       @method('PUT')
       <div class="modal-header bg-dark text-white">
         <h5 class="modal-title font-weight-bold" id="editAdminModalLabel">
-          <i class="fas fa-user-edit mr-1"></i> Edit Admin User
+          <i class="fas fa-user-edit mr-1"></i> Edit User Account
         </h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -319,7 +354,7 @@
         </div>
 
         <div class="form-group">
-          <label for="edit_admin_password" class="font-weight-bold">Reset Password (Leave blank to keep unchanged)</label>
+          <label for="edit_admin_password" class="font-weight-bold">Reset Password (Optional)</label>
           <input type="password" class="form-control" id="edit_admin_password" name="password" minlength="6" placeholder="Leave empty to keep existing password">
         </div>
 
@@ -327,11 +362,18 @@
           <div class="col-md-6">
             <div class="form-group">
               <label for="edit_admin_campus" class="font-weight-bold">Campus <span class="text-danger">*</span></label>
+              @if($isSuperAdmin)
               <select name="campusid" id="edit_admin_campus" class="form-control" required>
                 @foreach($campuses as $campus)
                   <option value="{{ $campus->campusid }}">{{ $campus->CampusName }}</option>
                 @endforeach
               </select>
+              @else
+              <input type="hidden" name="campusid" id="edit_admin_campus_hidden" value="{{ $currentUser->campusid }}">
+              <div class="form-control bg-light d-flex align-items-center font-weight-bold text-dark">
+                <i class="fas fa-school mr-1 text-primary"></i> {{ $currentUser->campus?->CampusName ?? 'Campus #' . $currentUser->campusid }}
+              </div>
+              @endif
             </div>
           </div>
           <div class="col-md-6">
