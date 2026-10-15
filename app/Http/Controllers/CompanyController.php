@@ -56,25 +56,18 @@ class CompanyController extends Controller
 
         try {
             $request->validated();
-            $imgname = "";
-            if ($request->logo) {
-                $imgname =  "companylogo-" . time() . "." . $request->logo->extension();
-            }
 
-            Company::updateOrCreate(['id' => $request->companyid], [
+            $company = Company::updateOrCreate(['id' => $request->companyid], [
                 'company_name' => $request->company_name,
                 'address' => $request->address,
                 'contact1' => $request->contact1,
                 'contact2' => $request->contact2,
                 'description' => $request->description,
                 'date_of_registeration' => $request->date_of_registeration,
-                'logo' => $imgname,
                 'campusid' => Auth::user()->campusid,
             ]);
 
-            if ($request->logo) {
-                $request->logo->move(public_path('companylogo'), $imgname);
-            }
+            $company->uploadMedia('logo', 'logo', 'logo');
 
         } catch (Exception $e) {
             return response()->json([

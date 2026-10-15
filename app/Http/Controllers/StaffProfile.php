@@ -21,6 +21,12 @@ class StaffProfile extends Controller
             AND ad.scaleid = sc.id AND ad.campusid = sc.campusid
             AND ad.campusid = com.campusid AND ad.id = ? and ad.campusid = ?
         ", [$stdid, Auth::user()->campusid]);
+
+        if (!empty($student)) {
+            $adminModel = \App\Models\Admin::find($student[0]->adminid);
+            $student[0]->profile_photo_url = $adminModel?->profile_photo_url;
+        }
+
         return response()->json(json_encode($student));
     }
 

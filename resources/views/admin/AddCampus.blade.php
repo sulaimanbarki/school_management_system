@@ -102,45 +102,25 @@
             </div>
 
 
-            <div class="row align-items-center   ">
-              <div class="col-md-2">
+            <div class="row align-items-start">
+              <div class="col-md-3">
                 <div class="form-group">
                   <label class="form-label" for="RegistrationDate"><b>Registration Date</b></label>
                   <input type="date" name="RegistrationDate" value="{{ date('Y-m-d') }}" class="form-control form-control-sm" id="RegistrationDate">
                 </div>
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label class="form-label" for="LogoPath"><b>Logo Path</b></label>
-                  <input type="file" accept="image/*" onchange="loadImage(event)" name="image"
-                    class="form-control-sm form-control-file" id="image">
-                </div>
-              </div>
-              <div class="col-md-2">
-                <div height="100px" width="100px">
-                  <img id="logo" src="#" alt="Logo Path" height="100px" width="100px" />
-                </div>
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label class="form-label" for="banklogo"><b>Bank Logo</b></label>
-                  <input type="file" accept="image/*" onchange="loadBankLogo(event)" name="banklogo"
-                    class="form-control-sm form-control-file" id="banklogo">
-                </div>
-              </div>
-              <div class="col-md-2">
-                <div height="100px" width="100px">
-                  <img id="blogo" src="#" alt="Logo Path" height="100px" width="100px" />
-                </div>
-              </div>
-              <div class="col-md-2">
-                <div class="form-group">
+                <div class="form-group mt-2">
                   <label class="form-label" for="SchoolStatus"><b>School Status</b></label>
                   <select name="SchoolStatus" required class="form-control form-control-sm" id="SchoolStatus">
                     <option value="Active">Active</option>
                     <option value="InActive">InActive</option>
                   </select>
                 </div>
+              </div>
+              <div class="col-md-4">
+                <x-media-uploader name="image" id="image" label="Campus Logo" height="115px" hint="Campus logo (PNG, JPG up to 5MB)" />
+              </div>
+              <div class="col-md-4">
+                <x-media-uploader name="banklogo" id="banklogo" label="Bank Logo" height="115px" hint="Bank voucher logo (PNG, JPG up to 5MB)" />
               </div>
             </div>
 
@@ -231,8 +211,8 @@
     $('#cancelbtn').hide();
     $('#insert').show();
     $('#insert').prop('type', 'submit');
-    $('#logo').attr('src', "#");
-    $('#blogo').attr('src', "#");
+    window.clearMediaFile('image');
+    window.clearMediaFile('banklogo');
   }
   $(document).ready(function(){
 
@@ -267,9 +247,10 @@
             }
             LoadCompany();
             $("#AddConfigForm").trigger("reset");
+            window.clearMediaFile('image');
+            window.clearMediaFile('banklogo');
             $('#update').hide();
             $('#cancelbtn').hide();
-            $('#update').hide();
             $('#insert').show();
             $('#insert').prop('type', 'submit');
             $('#CampusPrefix').prop('required','required');
@@ -298,11 +279,10 @@
           contentType: false,
           success: function(result){
             $("#AddConfigForm").trigger('reset');
+            window.clearMediaFile('image');
+            window.clearMediaFile('banklogo');
             LoadCompany();
             swal("Good job!", "Campus is successfully added!", "success");
-            $("#AddConfigForm").trigger("reset");
-            $('#logo').attr('src', "#");
-            $('#blogo').attr('src', "#");
           },
           error: function(error) {
             $.each(error.responseJSON.errors, function(field_name,error){
@@ -360,16 +340,6 @@
     });
   }
 
-// logo image upload display
-var loadImage = function(event) {
-  var image = document.getElementById("logo");
-  image.src = URL.createObjectURL(event.target.files[0]);
-};
-var loadBankLogo = function(event) {
-  var image = document.getElementById("blogo");
-  image.src = URL.createObjectURL(event.target.files[0]);
-};
-
 function EditCampus(campusid,i) {
   $('#insert').hide();
   $('#insert').prop('type', '');
@@ -391,6 +361,22 @@ function EditCampus(campusid,i) {
   $('#SchoolStatus').val(dataa[i].SchoolStatus);
   $('#DefaultAddress').val(dataa[i].DefaultAddress);
   $('#DefaultAddress1').val(dataa[i].DefaultAddress1);
+
+  if (dataa[i].logo_photo_url) {
+    window.setMediaPreview('image', dataa[i].logo_photo_url);
+  } else if (dataa[i].Logo_photo_path) {
+    window.setMediaPreview('image', '/CampusLogos/' + dataa[i].Logo_photo_path);
+  } else {
+    window.clearMediaFile('image');
+  }
+
+  if (dataa[i].bank_logo_url) {
+    window.setMediaPreview('banklogo', dataa[i].bank_logo_url);
+  } else if (dataa[i].banklogo) {
+    window.setMediaPreview('banklogo', '/banklogo/' + dataa[i].banklogo);
+  } else {
+    window.clearMediaFile('banklogo');
+  }
 }
 
 

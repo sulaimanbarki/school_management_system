@@ -57,8 +57,7 @@
                                                     name="description" />
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="logo" class="form-label">Logo Path</label>
-                                                <input type="file" class="form-control-file" id="logo" name="logo" />
+                                                <x-media-uploader name="logo" id="logo" label="Company Logo" height="110px" hint="Company logo (PNG, JPG)" />
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="date_of_registeration" class="form-label">Date of
@@ -391,11 +390,20 @@
             $('#saveCompany').prop('type', '');
             $('#updateCompany').show();
             $('#cancelbtn').show();
+
+            if (data.logo_url) {
+                window.setMediaPreview('logo', data.logo_url);
+            } else if (data.logo) {
+                window.setMediaPreview('logo', '/companylogo/' + data.logo);
+            } else {
+                window.clearMediaFile('logo');
+            }
         })
     });
 
     function ResetFormByCancelKey(){
         $("#companyform").trigger('reset');
+        window.clearMediaFile('logo');
         $('#updateCompany').hide();
         $('#cancelbtn').hide();
         $('#saveCompany').show().prop('type', 'submit');
@@ -487,6 +495,7 @@
             contentType: false,
             success: function(result){
             $("#companyform").trigger('reset');
+            window.clearMediaFile('logo');
             LoadCompany();
             swal("Good job!", "Successfully added!", "success");
             // $("#AddConfigForm").trigger("reset");
@@ -578,6 +587,7 @@
             contentType: false,
             success: function(result){
                 $("#companyform").trigger('reset');
+                window.clearMediaFile('logo');
                 $('#updateCompany').hide();
                 $('#cancelbtn').hide();
                 $('#saveCompany').show().prop('type', 'submit');

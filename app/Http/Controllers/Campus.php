@@ -75,18 +75,6 @@ class Campus extends Controller
             'banklogo' => 'nullable|mimes:jpg,jpeg,png|max:5048'
         ]);
 
-        $imgname = null;
-        if ($request->hasFile('image')) {
-            $imgname = "CampusLogos-" . time() . "." . $request->file('image')->extension();
-            $request->file('image')->move(public_path('CampusLogos'), $imgname);
-        }
-
-        $banklogopath = null;
-        if ($request->hasFile('banklogo')) {
-            $banklogopath = "banklogo-" . time() . "." . $request->file('banklogo')->extension();
-            $request->file('banklogo')->move(public_path('banklogo'), $banklogopath);
-        }
-
         $addCampus->CampusPrefix = $request->CampusPrefix;
         $addCampus->CampusName = $request->CampusName;
         $addCampus->CampusEmail = $request->CampusEmail;
@@ -99,10 +87,12 @@ class Campus extends Controller
         $addCampus->BankName = $request->BankName;
         $addCampus->AccountNumber = $request->AccountNumber;
         $addCampus->RegistraionDate = $request->RegistrationDate;
-        $addCampus->Logo_photo_path = $imgname;
-        $addCampus->banklogo = $banklogopath;
         $addCampus->SchoolStatus = $request->SchoolStatus;
+
         if ($addCampus->save()) {
+            $addCampus->uploadMedia('image', 'campus_logo', 'Logo_photo_path');
+            $addCampus->uploadMedia('banklogo', 'bank_logo', 'banklogo');
+
             return response()->json(['result' => 'Campus is successfully added']);
         } else {
             return response()->json(['error' => 'Data is successfully added']);
@@ -150,14 +140,18 @@ class Campus extends Controller
      */
     public function update(Request $request)
     {
+        $campusModel = addCampus::where('campusid', $request->campusid)->first();
+        $campusModel?->uploadMedia('image', 'campus_logo', 'Logo_photo_path');
+        $campusModel?->uploadMedia('banklogo', 'bank_logo', 'banklogo');
+        $imgname = $campusModel?->Logo_photo_path;
+        $banklogopath = $campusModel?->banklogo;
+
         if (!empty($request->CampusPrefix)) {
             $checking = addClass::where('campusid', $request->campusid)->first();
             if (!empty($checking)) {
                 $request->validate([
                     'CampusName' => 'required|min:1|max:255',
-                    // 'CampusEmail' => 'required|unique:configurations,CampusEmail,' . $request->campusid . 'campusid',
                     'CampusEmail' => ['required', Rule::unique('configurations')->ignore($request->campusid, 'campusid')],
-                    // 'CampusPrefix' => ['required', Rule::unique('configurations')->ignore($request->campusid, 'campusid')],
                     'DefaultReligion' => 'required',
                     'DefaultBoard' => 'required',
                     'Phone' => 'required|min:1|max:255',
@@ -171,27 +165,6 @@ class Campus extends Controller
                     'banklogo' => 'mimes:jpg,jpeg,png|max:5048'
                 ]);
 
-                $imgname = addCampus::where('campusid', $request->campusid)->value('Logo_photo_path');
-
-                if ($request->hasFile('image')) {
-                    if ($imgname && File::exists(public_path("CampusLogos/" . $imgname))) {
-                        File::delete(public_path("CampusLogos/" . $imgname));
-                    }
-
-                    $imgname =  "CampusLogos-" . time() . "." . $request->file('image')->extension();
-                    $request->file('image')->move(public_path('CampusLogos'), $imgname);
-                }
-
-                // take the default value which exists in database,,, if the user upload new logo, the old one will be replace
-                $banklogopath = addCampus::where('campusid', $request->campusid)->value('banklogo');
-                if ($request->hasFile('banklogo')) {
-                    if ($banklogopath && File::exists(public_path("banklogo/" . $banklogopath))) {
-                        File::delete(public_path("banklogo/" . $banklogopath));
-                    }
-                    $banklogopath =  "banklogo-" . time() . "." . $request->file('banklogo')->extension();
-                    $request->file('banklogo')->move(public_path('banklogo'), $banklogopath);
-                }
-
                 $campusPrefix = (string) $request->input('CampusPrefix', '');
                 if (!preg_match("/-$/i", $campusPrefix)) {
                     $campusPrefix .= "-";
@@ -201,7 +174,6 @@ class Campus extends Controller
                 addCampus::where('campusid', $request->input('campusid'))->update([
                     'CampusName' => $request->input('CampusName'),
                     'CampusEmail' => $request->input('CampusEmail'),
-                    // 'CampusPrefix' => $request->CampusPrefix,
                     'DefaultBoard' => $request->input('DefaultBoard'),
                     'DefaultReligion' => $request->input('DefaultReligion'),
                     'Phone' => $request->input('Phone'),
@@ -221,7 +193,6 @@ class Campus extends Controller
             } else {
                 $request->validate([
                     'CampusName' => 'required|min:1|max:255',
-                    'CampusEmail' => 'required|unique:configurations,CampusEmail,' . $request->campusid . 'campusid',
                     'CampusEmail' => ['required', Rule::unique('configurations')->ignore($request->campusid, 'campusid')],
                     'CampusPrefix' => ['required', Rule::unique('configurations')->ignore($request->campusid, 'campusid')],
                     'DefaultReligion' => 'required',
@@ -236,27 +207,6 @@ class Campus extends Controller
                     'image' => 'mimes:jpg,jpeg,png|max:5048',
                     'banklogo' => 'mimes:jpg,jpeg,png|max:5048'
                 ]);
-
-                $imgname = addCampus::where('campusid', $request->campusid)->value('Logo_photo_path');
-
-                if ($request->hasFile('image')) {
-                    if ($imgname && File::exists(public_path("CampusLogos/" . $imgname))) {
-                        File::delete(public_path("CampusLogos/" . $imgname));
-                    }
-
-                    $imgname =  "CampusLogos-" . time() . "." . $request->file('image')->extension();
-                    $request->file('image')->move(public_path('CampusLogos'), $imgname);
-                }
-
-                // take the default value which exists in database,,, if the user upload new logo, the old one will be replace
-                $banklogopath = addCampus::where('campusid', $request->campusid)->value('banklogo');
-                if ($request->hasFile('banklogo')) {
-                    if ($banklogopath && File::exists(public_path("banklogo/" . $banklogopath))) {
-                        File::delete(public_path("banklogo/" . $banklogopath));
-                    }
-                    $banklogopath =  "banklogo-" . time() . "." . $request->file('banklogo')->extension();
-                    $request->file('banklogo')->move(public_path('banklogo'), $banklogopath);
-                }
 
                 $campusPrefix = (string) $request->input('CampusPrefix', '');
                 if (!preg_match("/-$/i", $campusPrefix)) {
@@ -285,9 +235,7 @@ class Campus extends Controller
         } else {
             $request->validate([
                 'CampusName' => 'required|min:1|max:255',
-                'CampusEmail' => 'required|unique:configurations,CampusEmail,' . $request->campusid . 'campusid',
                 'CampusEmail' => ['required', Rule::unique('configurations')->ignore($request->campusid, 'campusid')],
-                // 'CampusPrefix' => ['required', Rule::unique('configurations')->ignore($request->campusid, 'campusid')],
                 'DefaultReligion' => 'required',
                 'DefaultBoard' => 'required',
                 'Phone' => 'required|min:1|max:255',
@@ -301,27 +249,6 @@ class Campus extends Controller
                 'banklogo' => 'mimes:jpg,jpeg,png|max:5048'
             ]);
 
-            $imgname = addCampus::where('campusid', $request->campusid)->value('Logo_photo_path');
-
-            if ($request->hasFile('image')) {
-                if ($imgname && File::exists(public_path("CampusLogos/" . $imgname))) {
-                    File::delete(public_path("CampusLogos/" . $imgname));
-                }
-
-                $imgname =  "CampusLogos-" . time() . "." . $request->file('image')->extension();
-                $request->file('image')->move(public_path('CampusLogos'), $imgname);
-            }
-
-            // take the default value which exists in database,,, if the user upload new logo, the old one will be replace
-            $banklogopath = addCampus::where('campusid', $request->campusid)->value('banklogo');
-            if ($request->hasFile('banklogo')) {
-                if ($banklogopath && File::exists(public_path("banklogo/" . $banklogopath))) {
-                    File::delete(public_path("banklogo/" . $banklogopath));
-                }
-                $banklogopath =  "banklogo-" . time() . "." . $request->file('banklogo')->extension();
-                $request->file('banklogo')->move(public_path('banklogo'), $banklogopath);
-            }
-
             $campusPrefix = (string) $request->input('CampusPrefix', '');
             if (!preg_match("/-$/i", $campusPrefix)) {
                 $campusPrefix .= "-";
@@ -331,7 +258,6 @@ class Campus extends Controller
             addCampus::where('campusid', $request->input('campusid'))->update([
                 'CampusName' => $request->input('CampusName'),
                 'CampusEmail' => $request->input('CampusEmail'),
-                // 'CampusPrefix' => $request->CampusPrefix,
                 'DefaultBoard' => $request->input('DefaultBoard'),
                 'DefaultReligion' => $request->input('DefaultReligion'),
                 'Phone' => $request->input('Phone'),

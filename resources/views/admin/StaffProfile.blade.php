@@ -335,8 +335,10 @@ function LoadSfaffInfo(stdid) {
       $(".contact").html(feesheads[0].phone1);
       $(".bps").html(feesheads[0].basicpay);
       
-      let path = "{{ asset('profilepicture/')}}";
-      if(feesheads[0].profile_photo_path){
+      if(feesheads[0].profile_photo_url){
+        $("#profilePicture").attr("src", feesheads[0].profile_photo_url);
+      }else if(feesheads[0].profile_photo_path){
+        let path = "{{ asset('profilepicture/')}}";
         $("#profilePicture").attr("src", path + "/" + feesheads[0].profile_photo_path);
       }else{
         $("#profilePicture").attr("src", "{{ asset('userbackend/dist/img/AdminLTELogo.png') }}");

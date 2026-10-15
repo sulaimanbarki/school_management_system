@@ -463,8 +463,7 @@
                 </select>
               </div>
               <div class="col-md-2">
-                <label for="profilepicture" class="form-label"><b>Profile Picture</b></label>
-                <input type="file" class="form-control-sm form-control-file" id="profilepicture" name="profilepicture">
+                <x-media-uploader name="profilepicture" id="profilepicture" label="Profile Picture" height="110px" hint="JPG/PNG" />
               </div>
             </div>
 

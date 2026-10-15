@@ -69,12 +69,6 @@ class EmployeeController extends Controller
             'busnumber' => '',
         ]);
 
-        $imgname = "";
-        if ($request->profilepicture) {
-            $imgname =  "profilepicture-" . time() . "." . $request->profilepicture->extension();
-            $request->profilepicture->move(public_path('profilepicture'), $imgname);
-        }
-
         //store
         $emp = new Admin();
 
@@ -94,11 +88,12 @@ class EmployeeController extends Controller
         $emp->departmentid = $request->empindepartment;
         $emp->scaleid = $request->empscale;
         $emp->fixedsalary = $request->fixedsalary;
-        $emp->profile_photo_path = $imgname;
         $emp->campusid = $campusid;
         $emp->busnumber = $request->busnumber;
 
         if ($emp->save()) {
+            $emp->uploadMedia('profilepicture', 'profile_picture', 'profile_photo_path');
+
             // Automatically assign matching Spatie permission role (e.g. Teacher, Accountant)
             $legacyRole = \App\Models\Role::find($request->empRole);
             if ($legacyRole) {
@@ -179,16 +174,9 @@ class EmployeeController extends Controller
             'busnumber' => '',
         ]);
 
-        $imgname = Admin::where('id', $request->id)->value('profile_photo_path');
-
-        if ($request->profilepicture) {
-            if (File::exists("profilepicture/" . Admin::where('id', $request->id)->value('profile_photo_path'))) {
-                File::delete("profilepicture/" . Admin::where('id', $request->id)->value('profile_photo_path'));
-            }
-
-            $imgname =  "profilepicture-" . time() . "." . $request->profilepicture->extension();
-            $request->profilepicture->move(public_path('profilepicture'), $imgname);
-        }
+        $emp = Admin::find($request->id);
+        $emp?->uploadMedia('profilepicture', 'profile_picture', 'profile_photo_path');
+        $imgname = $emp?->profile_photo_path;
 
         if ($request->input('addCampusAdmin')) {
             try {

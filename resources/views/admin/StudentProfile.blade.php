@@ -429,8 +429,10 @@ function LoadStudentInfo(stdid) {
       $(".contact").html(feesheads[0].fathercontact);
       $(".remarks").html(feesheads[0].admissionremarks);
 
-      let path = "{{ asset('studentprofilepicture/')}}";
-      if(feesheads[0].picturepath){
+      if(feesheads[0].picture_url){
+        $("#profilePicture").attr("src", feesheads[0].picture_url);
+      }else if(feesheads[0].picturepath){
+        let path = "{{ asset('studentprofilepicture/')}}";
         $("#profilePicture").attr("src", path + "/" + feesheads[0].picturepath);
       }else{
         $("#profilePicture").attr("src", "{{ asset('userbackend/dist/img/AdminLTELogo.png') }}");

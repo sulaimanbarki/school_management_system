@@ -101,11 +101,7 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="form-group">
-                  <label for="profilepicture" class="form-label"><b>Profile Picture</b></label>
-                  <input type="file" class="form-control-sm form-control-file" id="profilepicture" required
-                    name="profilepicture" placeholder="">
-                </div>
+                <x-media-uploader name="profilepicture" id="profilepicture" label="Profile Picture" height="115px" />
               </div>
             </div>
 
@@ -561,7 +557,11 @@ function FetchAdmissionNumber(){
     $('#admissiondate').val(admissionData[i].date);
     $('#session').val(admissionData[i].session);
     $('#studentnamee').val(admissionData[i].studentname);
-    // $('#profilepicture').val(admissionData[i].picturepath);
+    if (admissionData[i].picturepath) {
+      window.setMediaPreview('profilepicture', '{{ asset('studentprofilepicture') }}/' + admissionData[i].picturepath);
+    } else {
+      window.clearMediaFile('profilepicture');
+    }
     $('#gender').val(admissionData[i].gender);
     $('#status').val(admissionData[i].status);
     $('#dob').val(admissionData[i].dob);

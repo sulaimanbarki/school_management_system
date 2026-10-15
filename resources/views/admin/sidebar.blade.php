@@ -8,11 +8,7 @@
         $campus = \App\Models\addCampus::where('campusid', $currentUser?->campusid ?? 1)->first();
         ?>
 
-        <img src="<?php if ($campus?->Logo_photo_path) {
-            echo asset('CampusLogos/' . $campus->Logo_photo_path);
-        } else {
-            echo asset('userbackend/dist/img/AdminLTELogo.png');
-        } ?>" alt="" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img src="{{ $campus?->logo_photo_url ?? asset('userbackend/dist/img/AdminLTELogo.png') }}" alt="" class="brand-image img-circle elevation-3" style="opacity: .8">
 
         <span class="brand-text font-weight-light">{{ $campus?->CampusName ?? 'School System' }}</span>
 

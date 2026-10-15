@@ -80,15 +80,6 @@ class StudentInfoController extends Controller
         ]);
 
 
-        // if (File::exists("studentprofilepicture/" . StudentInfo::where('id', $request->id)->value('picturepath'))) {
-        //     File::delete("studentprofilepicture/" . StudentInfo::where('id', $request->id)->value('picturepath'));
-        // }
-        $imgname = "";
-        if ($request->profilepicture) {
-            $imgname =  "studentprofilepicture-" . time() . "." . $request->profilepicture->extension();
-            $request->profilepicture->move(public_path('studentprofilepicture'), $imgname);
-        }
-
         $adm = new StudentInfo();
         $adm->formid = $request->formid;
         $adm->studentid = $pre;
@@ -113,10 +104,11 @@ class StudentInfoController extends Controller
         $adm->occupation = $request->occupation;
         $adm->transportstatus = $request->transport;
         $adm->busnumber = $request->transport == 'Yes' ? $request->transporttype : null;
-        $adm->picturepath = $imgname;
         $adm->admissionremarks = $request->admissionremarks;
 
         if ($adm->save()) {
+            $adm->uploadMedia('profilepicture', 'profile_picture', 'picturepath');
+
             return 'success';
         } else {
             return 'error';
@@ -205,17 +197,9 @@ class StudentInfoController extends Controller
             'admissionremarks' => '',
         ]);
 
-        $imgname = "";
-        if ($request->profilepicture) {
-            if (File::exists("studentprofilepicture/" . StudentInfo::where('id', $request->admissionid)->value('picturepath'))) {
-                File::delete("studentprofilepicture/" . StudentInfo::where('id', $request->admissionid)->value('picturepath'));
-            }
-
-            $imgname =  "studentprofilepicture-" . time() . "." . $request->profilepicture->extension();
-            $request->profilepicture->move(public_path('studentprofilepicture'), $imgname);
-        } else {
-            $imgname = StudentInfo::where('id', $request->admissionid)->value('picturepath');
-        }
+        $student = StudentInfo::where('id', $request->admissionid)->first();
+        $student?->uploadMedia('profilepicture', 'profile_picture', 'picturepath');
+        $imgname = $student?->picturepath;
 
         $update = StudentInfo::where('id', $request->input('admissionid'))->where('registrationid', $request->admissionnumber)->update([
             'studentname' => $request->input('studentnamee'),
@@ -259,6 +243,12 @@ class StudentInfoController extends Controller
         where si.admissioninclass = cl.c_id and si.admissioninsection = sec.sec_id and si.campusid = cl.campusid and si.campusid = sec.campusid and
         `studentid` = ?
         ", [$stdid]);
+
+        if (!empty($student)) {
+            $studentModel = StudentInfo::where('studentid', $stdid)->first();
+            $student[0]->picture_url = $studentModel?->picture_url;
+        }
+
         return response()->json(json_encode($student));
     }
 
